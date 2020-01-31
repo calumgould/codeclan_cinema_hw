@@ -41,6 +41,31 @@ class Customer
     SqlRunner.run(sql, values)
   end
 
+  def films()
+    sql = "SELECT films.*
+    FROM films
+    INNER JOIN tickets
+    ON tickets.film_id = films.id
+    WHERE customer_id = $1"
+    values = [@id]
+    films = SqlRunner.run(sql, values)
+    return Film.map_items(films)
+  end
+
+  def ticket_count()
+    return films().count()
+  end
+
+  def buy_ticket(film, screening)
+    ticket_cost = film.price
+    if screening.capacity_exceeded? == false && @funds >= ticket_cost
+      Ticket.new('film_id' => film.id, 'customer_id' => @id, 'screening_id' => screening.id).save()
+      return @funds -= ticket_cost
+    else
+      return false
+    end
+  end
+
   def self.map_items(customer_data)
     results = customer_data.map {|customer| Customer.new(customer)}
     return results
