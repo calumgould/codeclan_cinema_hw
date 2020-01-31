@@ -62,7 +62,8 @@ class Screening
   def self.most_popular_screening_of_film(film)
     screenings = film.screenings
     tickets_sold_array = screenings.map { |screening| self.tickets_sold(screening)}
-    return tickets_sold_array
+    index = tickets_sold_array.index(tickets_sold_array.max)
+    return screenings[index]
   end
 
   def capacity_exceeded?()
